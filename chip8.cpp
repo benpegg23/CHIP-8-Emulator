@@ -30,5 +30,18 @@ void Chip8::initialize(){
   for (int i = 0; i < 80; i++){ 
     memory[0x050 + i] = font[i];
   }
-
+  // initialize stack pointer to bottom of stack
+  SP = 0;
+  // initialize display to be off
+  std::memset(display, 0, sizeof(display));
+  // initialize keys to be not pressed
+  std::memset(keypad, 0, sizeof(keypad));
+  // initialize the PC to point to start of where chip-8 programs begin
+  PC = 0x200;
+  // initalize I, timers, stack, and registers
+  I = 0;
+  delay_timer = 0;
+  sound_timer = 0;
+  std::memset(stack, 0, sizeof(stack));
+  std::memset(V, 0, sizeof(V));
 }
