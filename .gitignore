@@ -1,0 +1,11 @@
+# vscode folder
+.vscode/
+
+# build and object files
+*.o
+*.out
+*.exe
+a.out
+
+# temporary files.
+*~
