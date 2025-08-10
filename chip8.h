@@ -6,6 +6,8 @@ class Chip8 {
   public:
     Chip8();
     void initialize();
+    void instruction_cycle();
+    // uint16_t get_PC(); ***testing***
   private:
     uint8_t memory[4096]; // virtual memory
     uint8_t V[16]; // registers (V0 - VF)

@@ -2,12 +2,11 @@
 #include <cstring>
 
 Chip8::Chip8(){
-
-  ...
+  initialize();
 }
 
 void Chip8::initialize(){
-  std::memset(memory, 0, sizeof(memory)); //initialize virtual memory
+  std::memset(memory, 0, sizeof(memory)); // initialize virtual memory
   uint8_t font[80] = {
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
     0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -38,10 +37,28 @@ void Chip8::initialize(){
   std::memset(keypad, 0, sizeof(keypad));
   // initialize the PC to point to start of where chip-8 programs begin
   PC = 0x200;
-  // initalize I, timers, stack, and registers
+  // initalize I, timers, stack, instruction, and registers
   I = 0;
   delay_timer = 0;
   sound_timer = 0;
   std::memset(stack, 0, sizeof(stack));
   std::memset(V, 0, sizeof(V));
 }
+
+void Chip8::instruction_cycle(){
+  // fetch (instructions are 16 bits)
+  uint16_t instruction = memory[PC]; 
+  instruction = instruction << 8; 
+  instruction += memory[PC+1]; 
+  PC += 2;
+  // decode
+
+
+}
+
+/*
+*** Used for testing ***
+uint16_t Chip8::get_PC(){
+  return PC;
+}
+*/
