@@ -1,5 +1,6 @@
 #include "chip8.h"
 #include <cstring>
+#include <iostream>
 
 Chip8::Chip8(){
   initialize();
@@ -51,8 +52,77 @@ void Chip8::instruction_cycle(){
   instruction = instruction << 8; 
   instruction += memory[PC+1]; 
   PC += 2;
-  // decode
+  // decode and execute
+  // x: second nibble, access register Vx
+  // y: third nibble, access register Vy
+  // N: fourth nibble, 4-bit number
+  // NN: third, fourth nibble (second byte), 8-bit number
+  // NNN: second, third, fourth nibble, 12-bit number/address
+  // use bitmasks and shifts to isolate the right nibble(s)
+  uint8_t x = (instruction & 0x0F00) >> 4*2; 
+  uint8_t y = (instruction & 0x00F0) >> 4*1;
+  uint8_t N = instruction & 0x000F;
+  uint8_t NN = instruction & 0x00FF;
+  uint16_t NNN = instruction & 0x0FFF;
+  switch((instruction & 0xF000) >> 4*3) {
+    case 0x0: // {0NNN, 00E0, 00EE}
+      if (N == 0x0) { // 00E0 (clear screen)
 
+      } else if (N == 0xE){ // 00EE
+
+      } else { // 0NNN
+
+      }
+      break;
+    case 0x1: // {1NNN} 
+      PC = NNN; // (jump)
+      break;
+    case 0x2: // {2NNN}
+
+      break;
+    case 0x3: // {3XNN}
+
+      break;
+    case 0x4: // {4XNN}
+
+      break;
+    case 0x5: // {5XY0}
+
+      break;
+    case 0x6: // {6XNN}
+      V[x] = NN; // (set)
+      break;
+    case 0x7: // {7XNN}
+      V[x] += NN; // (add)
+      break;
+    case 0x8: // {8XY0, 8XY1, 8XY2, 8XY3, 8XY4, 8XY5, 8XY6, 8XY7, 8XYE}
+
+      break;
+    case 0x9: // {9XY0}
+
+      break;
+    case 0xA: // {ANNN}
+      I = NNN; // (set index)
+      break;
+    case 0xB: // {BNNN}
+
+      break;
+    case 0xC: // {CXNN}
+
+      break;
+    case 0xD: // {DXYN}
+      
+      break;
+    case 0xE: // {EX9E, EXA1}
+
+      break;
+    case 0xF: // {FX07, FX15, FX18, FX1E, FX0A, FX29, FX33, FX55, FX65}
+
+      break;
+    default: 
+      std::cout << "Unknown opcode: " << instruction << "\n";
+      
+  }
 
 }
 
