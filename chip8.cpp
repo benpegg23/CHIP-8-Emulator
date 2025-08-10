@@ -67,12 +67,12 @@ void Chip8::instruction_cycle(){
   switch((instruction & 0xF000) >> 4*3) {
     case 0x0: // {0NNN, 00E0, 00EE}
       if (N == 0x0) { // 00E0 (clear screen)
-
-      } else if (N == 0xE){ // 00EE
+        std::memset(display, 0, sizeof(display));
+      } /*else if (N == 0xE){ // 00EE
 
       } else { // 0NNN
 
-      }
+      }*/
       break;
     case 0x1: // {1NNN} 
       PC = NNN; // (jump)
@@ -111,7 +111,28 @@ void Chip8::instruction_cycle(){
 
       break;
     case 0xD: // {DXYN}
-      
+      uint8_t x_start = V[x] % 64;
+      uint8_t y_start = V[y] % 32;
+      V[0xF] = 0;
+      uint8_t width = 8/N;
+      uint8_t sprite = memory[I];
+      uint8_t sprite_position = 0;
+      for (int y_position = y_start; y_position < y_start + N; y_position++){
+        if (y_position >= 32){ // clips the bottom of the screen
+          break;
+        }
+        for (int x_position = x_start; x_position < x_start + N; x_position++){
+          if (x_position >= 64){ // clips right side of screen
+            sprite_position += width - (64 - x_start); // iterate past the part of the sprite that is clipped
+            break;
+          }
+          display[x_position][y_position] = sprite & sprite_position; // bitmask to get the right element of the sprite
+          sprite_position++;
+          if (display[x_position][y_position] == 0){
+            V[0xF] = 1;
+          }
+        }
+      }
       break;
     case 0xE: // {EX9E, EXA1}
 
