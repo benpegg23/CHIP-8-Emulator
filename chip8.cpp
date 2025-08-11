@@ -114,25 +114,30 @@ void Chip8::instruction_cycle(){
       uint8_t x_start = V[x] % 64;
       uint8_t y_start = V[y] % 32;
       V[0xF] = 0;
-      uint8_t width = 8/N;
-      uint8_t sprite = memory[I];
-      uint8_t sprite_position = 0;
-      for (int y_position = y_start; y_position < y_start + N; y_position++){
-        if (y_position >= 32){ // clips the bottom of the screen
+      int8_t sprite;
+      uint8_t pixel;
+      for (int row = 0; row < N; row++){
+        if (row + y_start >= 32){ // check for clipping at bottom
           break;
         }
-        for (int x_position = x_start; x_position < x_start + N; x_position++){
-          if (x_position >= 64){ // clips right side of screen
-            sprite_position += width - (64 - x_start); // iterate past the part of the sprite that is clipped
+        sprite = memory[I + row];
+        for (int col = 0; col < 8; col++){
+          if (col + x_start >= 64){ // check for clipping at right side
             break;
           }
-          display[x_position][y_position] = sprite & sprite_position; // bitmask to get the right element of the sprite
-          sprite_position++;
-          if (display[x_position][y_position] == 0){
+          if (sprite < 0){ // find msb of sprite
+            pixel = 1;
+          } else {
+            pixel = 0;
+          }
+          sprite <<= 1;
+          if (pixel && display[row + y_start][col + x_start]){ // pixel and display on at same position
             V[0xF] = 1;
           }
+          display[row + y_start][col + x_start] = pixel ^ display[row + y_start][col + x_start]; // use XOR to turn pixels on/off
         }
       }
+
       break;
     case 0xE: // {EX9E, EXA1}
 
