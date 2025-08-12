@@ -1,6 +1,7 @@
 #include "chip8.h"
 #include <cstring>
 #include <iostream>
+#include <fstream>
 
 Chip8::Chip8(){
   initialize();
@@ -52,13 +53,14 @@ void Chip8::instruction_cycle(){
   instruction = instruction << 8; 
   instruction += memory[PC+1]; 
   PC += 2;
-  // decode and execute
-  // x: second nibble, access register Vx
-  // y: third nibble, access register Vy
-  // N: fourth nibble, 4-bit number
-  // NN: third, fourth nibble (second byte), 8-bit number
-  // NNN: second, third, fourth nibble, 12-bit number/address
-  // use bitmasks and shifts to isolate the right nibble(s)
+  /* decode and execute
+   * x: second nibble, access register Vx
+   * y: third nibble, access register Vy
+   * N: fourth nibble, 4-bit number
+   * NN: third, fourth nibble (second byte), 8-bit number
+   * NNN: second, third, fourth nibble, 12-bit number/address
+   * use bitmasks and shifts to isolate the right nibble(s)
+  */
   uint8_t x = (instruction & 0x0F00) >> 4*2; 
   uint8_t y = (instruction & 0x00F0) >> 4*1;
   uint8_t N = instruction & 0x000F;
@@ -151,6 +153,27 @@ void Chip8::instruction_cycle(){
   }
 
 }
+
+void Chip8::load_rom(const char *file){
+  std::ifstream rom_file(file, std::ios::binary);
+  if (!rom_file){
+    std::cout << "ROM file load error";
+    return;
+  }
+  rom_file.seekg(0, std::ios::end);
+  uint16_t rom_size = rom_file.tellg();
+  rom_file.seekg(0);
+  rom_file.read((char*)&memory[0x200], rom_size);
+  rom_file.close();
+}
+
+void Chip8::debug(){
+  for (int i = 0; i < 16; i++){
+    std::cout << V[i];
+  }
+}
+
+
 
 /*
 *** Used for testing ***

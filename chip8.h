@@ -7,6 +7,8 @@ class Chip8 {
     Chip8();
     void initialize();
     void instruction_cycle();
+    void load_rom(const char *file);
+    void debug();
     // uint16_t get_PC(); ***testing***
   private:
     uint8_t memory[4096]; // virtual memory
