@@ -113,7 +113,7 @@ void Chip8::instruction_cycle(){
     case 0xC: // {CXNN}
 
       break;
-    case 0xD: // {DXYN}
+    case 0xD:{ // {DXYN}
       uint8_t x_start = V[x] % 64;
       uint8_t y_start = V[y] % 32;
       V[0xF] = 0;
@@ -142,6 +142,8 @@ void Chip8::instruction_cycle(){
       }
 
       break;
+    }
+    
     case 0xE: // {EX9E, EXA1}
 
       break;
