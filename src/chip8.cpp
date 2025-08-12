@@ -2,6 +2,7 @@
 #include <cstring>
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 
 Chip8::Chip8(){
   initialize();
@@ -169,7 +170,7 @@ void Chip8::load_rom(const char *file){
 
 void Chip8::debug(){
   for (int i = 0; i < 16; i++){
-    std::cout << V[i];
+    std::cout << "V" << i << ": 0x" << std::hex << (int)V[i] << "\n";
   }
 }
 

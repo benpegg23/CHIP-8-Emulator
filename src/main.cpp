@@ -12,19 +12,11 @@ int main(int argc, char* argv[]){
   chip8.load_rom(argv[1]);
 
   chip8.debug();
-  for (int i = 0; i < 10; i++){
+  for (int i = 0; i < 20; i++){
     chip8.instruction_cycle();
   }
   chip8.debug();
 
-  /* 
-  *** Used this for testing ***
-  if(chip8.get_PC() == 0x200){
-    cout << "Success!\n";
-  } else {
-    cout << "Failure :(\n";
-    cout << chip8.get_PC();
-    cout << "\n";
-  */
 
+  return 0;
 }
