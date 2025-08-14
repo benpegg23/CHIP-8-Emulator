@@ -2,6 +2,19 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 
+void draw(Chip8 *chip8_obj, SDL_Renderer *renderer_ptr){
+  SDL_SetRenderDrawColor(renderer_ptr, 0, 0, 0, 0);
+  const bool* pixel = chip8_obj->get_display();
+  SDL_Rect rect;
+  for (int y = 0; y < 32; y++){
+    for (int x = 0; x < 64; x++){
+      if (*(pixel + 64*y + x)) {
+
+      }
+    }
+  }
+}
+
 int main(int argc, char* argv[]){
   Chip8 chip8;
 
@@ -44,12 +57,24 @@ int main(int argc, char* argv[]){
   // event loop
   bool running = true;
   while(running){
+    // check for quitting
     while (SDL_PollEvent(&event)){
       if (event.type == SDL_QUIT){
         running = false;
       }
     }
-    SDL_SetRenderDrawColor()
+
+    // execute an instruction cycle
+    chip8.instruction_cycle();
+
+    // clear screen
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+
+    // draw stuff
+
+    // update window
+    SDL_RenderPresent(renderer);
 
   }
   
@@ -65,3 +90,4 @@ int main(int argc, char* argv[]){
 
   return 0;
 }
+

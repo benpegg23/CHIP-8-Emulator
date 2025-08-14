@@ -176,6 +176,9 @@ void Chip8::debug(){
   }
 }
 
+const bool* Chip8::get_display(){
+  return &display[0][0];
+}
 
 
 /*
