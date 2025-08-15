@@ -20,7 +20,7 @@ class Chip8 {
     uint16_t SP; // top of stack pointer
     uint8_t delay_timer; // decrement by one at 60 Hz
     uint8_t sound_timer; // also decrement at 60 Hz, beep sound when > 0 
-    bool display[64][32]; // display, use booleans to represent on/off pixels
+    bool display[32][64]; // display, use booleans to represent on/off pixels
     bool keypad[16]; 
 };
 

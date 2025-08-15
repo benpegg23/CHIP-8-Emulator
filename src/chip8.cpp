@@ -69,28 +69,36 @@ void Chip8::instruction_cycle(){
   uint16_t NNN = instruction & 0x0FFF;
   switch((instruction & 0xF000) >> 4*3) {
     case 0x0: // {0NNN, 00E0, 00EE}
-      if (N == 0x0) { // 00E0 (clear screen)
+      if (NNN == 0x0E0) { // 00E0 (clear screen)
         std::memset(display, 0, sizeof(display));
-      } /*else if (N == 0xE){ // 00EE
-
-      } else { // 0NNN
-
-      }*/
+      } else if (NNN == 0x0EE){ // 00EE (return from subroutine using a stack pop)
+        PC = stack[--SP];
+      } else { 
+        std::cout << "Unknown opcode: " << instruction << "\n";
+      } 
       break;
-    case 0x1: // {1NNN} 
-      PC = NNN; // (jump)
+    case 0x1: // {1NNN} (jump)
+      PC = NNN; 
       break;
-    case 0x2: // {2NNN}
-
+    case 0x2: // {2NNN} (call subroutine)
+      stack[SP] = PC;
+      SP++;
+      PC = NNN;
       break;
-    case 0x3: // {3XNN}
-
+    case 0x3: // {3XNN} (skip if Vx = NN)
+      if (V[x] == NN){
+        PC += 2;
+      }
       break;
-    case 0x4: // {4XNN}
-
+    case 0x4: // {4XNN} (skip if Vx != NN)
+      if (V[x] != NN){
+        PC += 2;
+      }
       break;
-    case 0x5: // {5XY0}
-
+    case 0x5: // {5XY0} (skip if Vx = Vy)
+      if (V[x] == V[y]){
+        PC += 2;
+      }
       break;
     case 0x6: // {6XNN}
       V[x] = NN; // (set)
@@ -99,13 +107,55 @@ void Chip8::instruction_cycle(){
       V[x] += NN; // (add)
       break;
     case 0x8: // {8XY0, 8XY1, 8XY2, 8XY3, 8XY4, 8XY5, 8XY6, 8XY7, 8XYE}
-
+      if (N == 0){ // 8XY0 (set Vx = Vy)
+        V[x] = V[y];
+      } else if (N == 0x1){ // 8XY1 (Vx = Vx OR Vy)
+        V[x] = V[x] | V[y];
+      } else if (N == 0x2){ // 8XY2 (Vx = Vx AND Vy)
+        V[x] = V[x] & V[y];
+      } else if (N == 0x3){ // 8XY3 (Vx = Vx XOR Vy)
+        V[x] = V[x] ^ V[y];
+      } else if (N == 0x4){ // 8XY4 (Vx = Vx + Vy)
+        V[x] += V[y];
+      } else if (N == 0x5){ // 8XY5 (Vx = Vx - Vy)
+        if (V[x] >= V[y]){
+          V[0xF] = 1;
+        } else {
+          V[0xF] = 0;
+        }
+        V[x] = V[x] - V[y];
+      } else if (N == 0x6){ // 8XY6 (Right Shift)
+        //V[x] = V[y] **configurable, some games require that Vx is set to Vy before shifting**
+        if (V[x] & 0x0001){
+          V[0xF] = 1;
+        } else {
+          V[0xF] = 0;
+        }
+        V[x] >>= 1;
+      } else if (N == 0x7){ // 8XY7 (Vx = Vy - Vx)
+        if (V[y] >= V[x]){
+          V[0xF] = 1;
+        } else {
+          V[0xF] = 0;
+        }
+        V[x] = V[y] - V[x];
+      } else if (N == 0xE){ // 8XYE (Left Shift)
+        //V[x] = V[y] //**configurable, some games require that Vx is set to Vy before shifting**
+        if (V[x] & 0x8000){
+          V[0xF] = 1;
+        } else {
+          V[0xF] = 0;
+        }
+        V[x] <<= 1;
+      } 
       break;
-    case 0x9: // {9XY0}
-
+    case 0x9: // {9XY0} (skip if Vx != Vy)
+      if (V[x] != V[y]){
+        PC += 2;
+      }
       break;
-    case 0xA: // {ANNN}
-      I = NNN; // (set index)
+    case 0xA: // {ANNN} (set index)
+      I = NNN;
       break;
     case 0xB: // {BNNN}
 
@@ -113,7 +163,7 @@ void Chip8::instruction_cycle(){
     case 0xC: // {CXNN}
 
       break;
-    case 0xD:{ // {DXYN}
+    case 0xD:{ // {DXYN} (draw)
       uint8_t x_start = V[x] % 64;
       uint8_t y_start = V[y] % 32;
       V[0xF] = 0;
@@ -148,7 +198,7 @@ void Chip8::instruction_cycle(){
 
       break;
     case 0xF: // {FX07, FX15, FX18, FX1E, FX0A, FX29, FX33, FX55, FX65}
-
+      
       break;
     default: 
       std::cout << "Unknown opcode: " << instruction << "\n";
