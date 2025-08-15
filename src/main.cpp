@@ -3,13 +3,17 @@
 #include <SDL2/SDL.h>
 
 void draw(Chip8 *chip8_obj, SDL_Renderer *renderer_ptr){
-  SDL_SetRenderDrawColor(renderer_ptr, 0, 0, 0, 0);
+  SDL_SetRenderDrawColor(renderer_ptr, 255, 255, 255, 255);
   const bool* pixel = chip8_obj->get_display();
   SDL_Rect rect;
+  rect.w = 10;
+  rect.h = 10;
   for (int y = 0; y < 32; y++){
     for (int x = 0; x < 64; x++){
       if (*(pixel + 64*y + x)) {
-
+        rect.x = x*10;
+        rect.y = y*10;
+        SDL_RenderFillRect(renderer_ptr, &rect);
       }
     }
   }
@@ -53,7 +57,7 @@ int main(int argc, char* argv[]){
     std::cout << "SDL error while creating renderer: " << SDL_GetError() << "\n";
     return 1;
   }
-  
+
   // event loop
   bool running = true;
   while(running){
@@ -64,28 +68,35 @@ int main(int argc, char* argv[]){
       }
     }
 
-    // execute an instruction cycle
-    chip8.instruction_cycle();
+    // execute 12 instruction cycles per frame to reach cpu clock speed of 720 Hz
+    for (int i = 0; i < 12; i++){
+      chip8.instruction_cycle();
+    }
 
     // clear screen
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
     // draw stuff
+    draw(&chip8, renderer);
 
     // update window
     SDL_RenderPresent(renderer);
 
+    // add delay of 16 ms to refresh at 60 Hz
+    SDL_Delay(16);
+
   }
   
-
-
-
   chip8.debug();
   for (int i = 0; i < 20; i++){
     chip8.instruction_cycle();
   }
   chip8.debug();
+
+  SDL_DestroyRenderer(renderer);
+  SDL_DestroyWindow(window);
+  SDL_Quit();
 
 
   return 0;
