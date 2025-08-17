@@ -88,6 +88,7 @@ int main(int argc, char* argv[]){
 
   }
   
+  /*
   chip8.debug();
   for (int i = 0; i < 20; i++){
     chip8.instruction_cycle();
@@ -97,7 +98,7 @@ int main(int argc, char* argv[]){
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();
-
+  */
 
   return 0;
 }

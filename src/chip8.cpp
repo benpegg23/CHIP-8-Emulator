@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <cstdlib>
 
 Chip8::Chip8(){
   initialize();
@@ -118,12 +119,12 @@ void Chip8::instruction_cycle(){
       } else if (N == 0x4){ // 8XY4 (Vx = Vx + Vy)
         V[x] += V[y];
       } else if (N == 0x5){ // 8XY5 (Vx = Vx - Vy)
-        if (V[x] >= V[y]){
+        V[x] = V[x] - V[y];
+        if (V[x] >= 0){
           V[0xF] = 1;
         } else {
           V[0xF] = 0;
         }
-        V[x] = V[x] - V[y];
       } else if (N == 0x6){ // 8XY6 (Right Shift)
         //V[x] = V[y] **configurable, some games require that Vx is set to Vy before shifting**
         if (V[x] & 0x0001){
@@ -157,12 +158,14 @@ void Chip8::instruction_cycle(){
     case 0xA: // {ANNN} (set index)
       I = NNN;
       break;
-    case 0xB: // {BNNN}
-
+    case 0xB: // {BNNN} (jump with offset) 
+      PC = NNN + V[0];
       break;
-    case 0xC: // {CXNN}
-
+    case 0xC: { // {CXNN} (random number)
+      int random = rand() % (NN + 1);
+      V[x] = random & NN;
       break;
+    }
     case 0xD:{ // {DXYN} (draw)
       uint8_t x_start = V[x] % 64;
       uint8_t y_start = V[y] % 32;
@@ -195,10 +198,57 @@ void Chip8::instruction_cycle(){
     }
     
     case 0xE: // {EX9E, EXA1}
+      if (NN == 0x9E){ // EX9E (skip if Vx key pressed)
 
+      } else if (NN == 0xA1){ // EXA1 (skip if Vx key not pressed)
+
+      }
       break;
     case 0xF: // {FX07, FX15, FX18, FX1E, FX0A, FX29, FX33, FX55, FX65}
-      
+      if (NN == 0x07){ // FX07 (set Vx to delay timer)
+        V[x] = delay_timer;
+      } else if (NN == 0x15){ // FX15 (set delay timer to Vx)
+        delay_timer = V[x];
+      } else if (NN == 0x18){ // FX18 (set sound timer to Vx)
+        sound_timer = V[x];
+      } else if (NN == 0x1E){ // FX1E (add Vx to index)
+        I += V[x];
+        if (I >= 0x1000){
+          V[0xF] = 1;
+        } else {
+          V[0xF] = 0;
+        }
+      } else if (NN == 0x0A){ // FX0A (get key)
+        bool key_pressed = false;
+        for (int i = 0; i < sizeof(keypad); i++){
+          if (keypad[i]) {
+            key_pressed = true;
+            V[x] = i;
+            break;
+          }
+        }
+        if (!key_pressed){
+          PC -= 2;
+        }
+      } else if (NN == 0x29){ // FX29 (font character)
+        I = 0x50 + V[x] * 5;
+      } else if (NN == 0x33){ // FX33 (binary-coded decimal conversion)
+        memory[I] = V[x] / 100; // (truncates cuz memory is int array)
+        memory[I + 1] = (V[x] / 10) % 10;
+        memory[I + 2] = V[x] % 10;
+      } else if (NN == 0x55){ // FX55 (store memory)
+        for (int j = 0; j <= x; j ++){
+          memory[I + j] = V[j];
+          // memory[I + j + 1] = V[j]; // (ambiguous instruction, used for old ROMs)
+        }
+
+
+      } else if (NN == 0x65){ // FX65 (load memory)
+        for (int j = 0; j <= x; j ++){
+          V[j] = memory[I + j];
+          // V[j] = memory[I + j + 1]; // (ambiguous instruction, used for old ROMs)
+        }
+      } 
       break;
     default: 
       std::cout << "Unknown opcode: " << instruction << "\n";
