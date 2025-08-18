@@ -107,7 +107,10 @@ void Chip8::instruction_cycle(){
     case 0x7: // {7XNN}
       V[x] += NN; // (add)
       break;
-    case 0x8: // {8XY0, 8XY1, 8XY2, 8XY3, 8XY4, 8XY5, 8XY6, 8XY7, 8XYE}
+    case 0x8: { // {8XY0, 8XY1, 8XY2, 8XY3, 8XY4, 8XY5, 8XY6, 8XY7, 8XYE}
+      uint8_t temp_x;
+      uint8_t temp_y;
+      bool carry;
       if (N == 0){ // 8XY0 (set Vx = Vy)
         V[x] = V[y];
       } else if (N == 0x1){ // 8XY1 (Vx = Vx OR Vy)
@@ -117,44 +120,30 @@ void Chip8::instruction_cycle(){
       } else if (N == 0x3){ // 8XY3 (Vx = Vx XOR Vy)
         V[x] = V[x] ^ V[y];
       } else if (N == 0x4){ // 8XY4 (Vx = Vx + Vy)
+        carry = (V[x] + V[y] > 255);
         V[x] += V[y];
-        if (V[x] > 255){
-          V[0xF] = 1;
-        } else {
-          V[0xF] = 0;
-        }
+        V[0xF] = carry;
       } else if (N == 0x5){ // 8XY5 (Vx = Vx - Vy)
-        V[x] = V[x] - V[y];
-        if (V[x] >= 0){
-          V[0xF] = 1;
-        } else {
-          V[0xF] = 0;
-        }
+        carry = (V[x] >= V[y]);
+        V[x] -= V[y];
+        V[0xF] = carry;
       } else if (N == 0x6){ // 8XY6 (Right Shift)
-        //V[x] = V[y] **configurable, some games require that Vx is set to Vy before shifting**
-        if (V[x] & 0x0001){
-          V[0xF] = 1;
-        } else {
-          V[0xF] = 0;
-        }
-        V[x] >>= 1;
+        //V[x] = V[y]; **configurable, some games require that Vx is set to Vy before shifting**
+        carry = (V[x] & 0x0001);
+        V[x] >>= 1; 
+        V[0xF] = carry;
       } else if (N == 0x7){ // 8XY7 (Vx = Vy - Vx)
+        carry = (V[y]>= V[x]);
         V[x] = V[y] - V[x];
-        if (V[x] >= 0){
-          V[0xF] = 1;
-        } else {
-          V[0xF] = 0;
-        }
+        V[0xF] = carry;
       } else if (N == 0xE){ // 8XYE (Left Shift)
-        //V[x] = V[y] //**configurable, some games require that Vx is set to Vy before shifting**
-        if (V[x] & 0x8000){
-          V[0xF] = 1;
-        } else {
-          V[0xF] = 0;
-        }
+        //V[x] = V[y]; //**configurable, some games require that Vx is set to Vy before shifting**
+        carry = (V[x] & 0x0080);
         V[x] <<= 1;
+        V[0xF] = carry;
       } 
       break;
+    }
     case 0x9: // {9XY0} (skip if Vx != Vy)
       if (V[x] != V[y]){
         PC += 2;
