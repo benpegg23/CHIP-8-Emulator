@@ -8,7 +8,7 @@ MSYS_MINGW_PREFIX := C:/msys64/mingw64
 
 # Compiler / flags
 CXX := g++
-CXXFLAGS := -std=c++17 -Wall -Wextra -I"$(MSYS_MINGW_PREFIX)/include/SDL2"
+CXXFLAGS := -std=c++17 -Wall -Wextra -I"$(MSYS_MINGW_PREFIX)/include"
 LDFLAGS := -L"$(MSYS_MINGW_PREFIX)/lib"
 LDLIBS := -lmingw32 -lSDL2main -lSDL2
 

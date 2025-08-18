@@ -1,6 +1,6 @@
 #include "chip8.h"
-#include <iostream>
 #include <SDL2/SDL.h>
+#include <iostream>
 
 void draw(Chip8 *chip8_obj, SDL_Renderer *renderer_ptr){
   SDL_SetRenderDrawColor(renderer_ptr, 255, 255, 255, 255);
