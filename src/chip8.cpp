@@ -277,6 +277,10 @@ const bool* Chip8::get_display(){
   return &display[0][0];
 }
 
+void Chip8::set_keypad(uint8_t key_index, bool pressed){
+  keypad[key_index] = pressed;
+}
+
 
 /*
 *** Used for testing ***

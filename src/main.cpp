@@ -61,10 +61,122 @@ int main(int argc, char* argv[]){
   // event loop
   bool running = true;
   while(running){
-    // check for quitting
     while (SDL_PollEvent(&event)){
+      // check for quitting
       if (event.type == SDL_QUIT){
         running = false;
+      }
+      /* ====KEY MAPPINGS====
+          =CHIP8=     =QWERTY=
+          1 2 3 C     1 2 3 4 
+          4 5 6 D     Q W E R
+          7 8 9 E     A S D F
+          A 0 B F     Z X C V
+      */
+      // check for keypresses
+      if (event.type == SDL_KEYDOWN){
+        switch (event.key.keysym.sym){
+          case SDLK_1:
+            chip8.set_keypad(0x1, true);
+            break;
+          case SDLK_2:
+            chip8.set_keypad(0x2, true);
+            break;
+          case SDLK_3:
+            chip8.set_keypad(0x3, true);
+            break;
+          case SDLK_4:
+            chip8.set_keypad(0xC, true);
+            break;
+          case SDLK_q:
+            chip8.set_keypad(0x4, true);
+            break;
+          case SDLK_w:
+            chip8.set_keypad(0x5, true);
+            break;
+          case SDLK_e:
+            chip8.set_keypad(0x6, true);
+            break;
+          case SDLK_r:
+            chip8.set_keypad(0xD, true);
+            break;
+          case SDLK_a:
+            chip8.set_keypad(0x7, true);
+            break;
+          case SDLK_s:
+            chip8.set_keypad(0x8, true);
+            break;
+          case SDLK_d:
+            chip8.set_keypad(0x9, true);
+            break;
+          case SDLK_f:
+            chip8.set_keypad(0xE, true);
+            break;
+          case SDLK_z:
+            chip8.set_keypad(0xA, true);
+            break;
+          case SDLK_x:
+            chip8.set_keypad(0x0, true);
+            break;
+          case SDLK_c:
+            chip8.set_keypad(0xB, true);
+            break;
+          case SDLK_v:
+            chip8.set_keypad(0xF, true);
+            break;
+        } 
+      }
+      if (event.type == SDL_KEYUP){
+        switch (event.key.keysym.sym){
+          case SDLK_1:
+            chip8.set_keypad(0x1, false);
+            break;
+          case SDLK_2:
+            chip8.set_keypad(0x2, false);
+            break;
+          case SDLK_3:
+            chip8.set_keypad(0x3, false);
+            break;
+          case SDLK_4:
+            chip8.set_keypad(0xC, false);
+            break;
+          case SDLK_q:
+            chip8.set_keypad(0x4, false);
+            break;
+          case SDLK_w:
+            chip8.set_keypad(0x5, false);
+            break;
+          case SDLK_e:
+            chip8.set_keypad(0x6, false);
+            break;
+          case SDLK_r:
+            chip8.set_keypad(0xD, false);
+            break;
+          case SDLK_a:
+            chip8.set_keypad(0x7, false);
+            break;
+          case SDLK_s:
+            chip8.set_keypad(0x8, false);
+            break;
+          case SDLK_d:
+            chip8.set_keypad(0x9, false);
+            break;
+          case SDLK_f:
+            chip8.set_keypad(0xE, false);
+            break;
+          case SDLK_z:
+            chip8.set_keypad(0xA, false);
+            break;
+          case SDLK_x:
+            chip8.set_keypad(0x0, false);
+            break;
+          case SDLK_c:
+            chip8.set_keypad(0xB, false);
+            break;
+          case SDLK_v:
+            chip8.set_keypad(0xF, false);
+            break;
+        }
       }
     }
 
@@ -94,11 +206,11 @@ int main(int argc, char* argv[]){
     chip8.instruction_cycle();
   }
   chip8.debug();
-
+  */
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();
-  */
+  
 
   return 0;
 }

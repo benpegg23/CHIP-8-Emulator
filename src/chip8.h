@@ -10,6 +10,7 @@ class Chip8 {
     void load_rom(const char *file);
     void debug();
     const bool* get_display();
+    void set_keypad(uint8_t key_index, bool pressed);
     // uint16_t get_PC(); ***testing***
   private:
     uint8_t memory[4096]; // virtual memory
