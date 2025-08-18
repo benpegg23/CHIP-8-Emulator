@@ -47,8 +47,10 @@ void Chip8::initialize(){
   sound_timer = 0;
   std::memset(stack, 0, sizeof(stack));
   std::memset(V, 0, sizeof(V));
-  // initialize halted
+  // cpu not halted
   halted = false; 
+  // no key being pressed, -1 means waiting for press
+  key_waiting = -1;
 }
 
 void Chip8::instruction_cycle(){
@@ -215,19 +217,25 @@ void Chip8::instruction_cycle(){
           V[0xF] = 0;
         }
       } else if (NN == 0x0A){ // FX0A (get key)
-        bool key_pressed = false;
         halted = true;
-        for (int i = 0; i < sizeof(keypad); i++){
-          if (keypad[i]) {
-            key_pressed = true;
-            halted = false;
-            V[x] = i;
-            break;
+        if (key_waiting == -1){ // no key pressed
+          for (int i = 0; i < sizeof(keypad); i++){
+            if (keypad[i]) {
+              key_waiting = i;
+              V[x] = i;
+              break;
+            }
+          }
+          PC -= 2;
+        } else { // key already pressed
+          if (keypad[key_waiting] == true){ // key not released
+            PC -= 2;
+          } else { // key released
+            key_waiting = -1;
+            halted = false; 
           }
         }
-        if (!key_pressed){
-          PC -= 2;
-        }
+        
       } else if (NN == 0x29){ // FX29 (font character)
         I = 0x50 + V[x] * 5;
       } else if (NN == 0x33){ // FX33 (binary-coded decimal conversion)
