@@ -47,6 +47,8 @@ void Chip8::initialize(){
   sound_timer = 0;
   std::memset(stack, 0, sizeof(stack));
   std::memset(V, 0, sizeof(V));
+  // initialize halted
+  halted = false; 
 }
 
 void Chip8::instruction_cycle(){
@@ -106,8 +108,6 @@ void Chip8::instruction_cycle(){
       V[x] += NN; // (add)
       break;
     case 0x8: { // {8XY0, 8XY1, 8XY2, 8XY3, 8XY4, 8XY5, 8XY6, 8XY7, 8XYE}
-      uint8_t temp_x;
-      uint8_t temp_y;
       bool carry;
       if (N == 0){ // 8XY0 (set Vx = Vy)
         V[x] = V[y];
@@ -216,9 +216,11 @@ void Chip8::instruction_cycle(){
         }
       } else if (NN == 0x0A){ // FX0A (get key)
         bool key_pressed = false;
+        halted = true;
         for (int i = 0; i < sizeof(keypad); i++){
           if (keypad[i]) {
             key_pressed = true;
+            halted = false;
             V[x] = i;
             break;
           }
@@ -281,6 +283,19 @@ void Chip8::set_keypad(uint8_t key_index, bool pressed){
   keypad[key_index] = pressed;
 }
 
+void Chip8::update_timers(){
+  if (sound_timer > 0){
+    sound_timer--;
+  }
+  if (delay_timer > 0){
+    delay_timer--;
+  }
+}
+
+
+bool Chip8::get_halted(){
+  return halted;
+}
 
 /*
 *** Used for testing ***

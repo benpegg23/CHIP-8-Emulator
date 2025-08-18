@@ -180,8 +180,15 @@ int main(int argc, char* argv[]){
       }
     }
 
+    // decrement timer
+    chip8.update_timers();
+    
     // execute 12 instruction cycles per frame to reach cpu clock speed of 720 Hz
-    for (int i = 0; i < 12; i++){
+    if (!chip8.get_halted()){
+      for (int i = 0; i < 12; i++){
+        chip8.instruction_cycle();
+      }
+    } else {
       chip8.instruction_cycle();
     }
 

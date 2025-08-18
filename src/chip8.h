@@ -11,6 +11,8 @@ class Chip8 {
     void debug();
     const bool* get_display();
     void set_keypad(uint8_t key_index, bool pressed);
+    void update_timers();
+    bool get_halted();
     // uint16_t get_PC(); ***testing***
   private:
     uint8_t memory[4096]; // virtual memory
@@ -22,7 +24,8 @@ class Chip8 {
     uint8_t delay_timer; // decrement by one at 60 Hz
     uint8_t sound_timer; // also decrement at 60 Hz, beep sound when > 0 
     bool display[32][64]; // display, use booleans to represent on/off pixels
-    bool keypad[16]; 
+    bool keypad[16]; // keys
+    bool halted; // checks if cpu should go into halted state
 };
 
 #endif
