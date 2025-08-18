@@ -74,8 +74,6 @@ void Chip8::instruction_cycle(){
         std::memset(display, 0, sizeof(display));
       } else if (NNN == 0x0EE){ // 00EE (return from subroutine using a stack pop)
         PC = stack[--SP];
-      } else { 
-        std::cout << "Unknown opcode: " << instruction << "\n";
       } 
       break;
     case 0x1: // {1NNN} (jump)
@@ -193,9 +191,13 @@ void Chip8::instruction_cycle(){
     
     case 0xE: // {EX9E, EXA1}
       if (NN == 0x9E){ // EX9E (skip if Vx key pressed)
-
+        if (keypad[V[x]]){
+          PC += 2;
+        }
       } else if (NN == 0xA1){ // EXA1 (skip if Vx key not pressed)
-
+        if (!keypad[V[x]]){
+          PC += 2;
+        }
       }
       break;
     case 0xF: // {FX07, FX15, FX18, FX1E, FX0A, FX29, FX33, FX55, FX65}
@@ -246,6 +248,7 @@ void Chip8::instruction_cycle(){
       break;
     default: 
       std::cout << "Unknown opcode: " << instruction << "\n";
+      exit(1);
       
   }
 
