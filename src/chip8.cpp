@@ -118,6 +118,11 @@ void Chip8::instruction_cycle(){
         V[x] = V[x] ^ V[y];
       } else if (N == 0x4){ // 8XY4 (Vx = Vx + Vy)
         V[x] += V[y];
+        if (V[x] > 255){
+          V[0xF] = 1;
+        } else {
+          V[0xF] = 0;
+        }
       } else if (N == 0x5){ // 8XY5 (Vx = Vx - Vy)
         V[x] = V[x] - V[y];
         if (V[x] >= 0){
@@ -134,12 +139,12 @@ void Chip8::instruction_cycle(){
         }
         V[x] >>= 1;
       } else if (N == 0x7){ // 8XY7 (Vx = Vy - Vx)
-        if (V[y] >= V[x]){
+        V[x] = V[y] - V[x];
+        if (V[x] >= 0){
           V[0xF] = 1;
         } else {
           V[0xF] = 0;
         }
-        V[x] = V[y] - V[x];
       } else if (N == 0xE){ // 8XYE (Left Shift)
         //V[x] = V[y] //**configurable, some games require that Vx is set to Vy before shifting**
         if (V[x] & 0x8000){
