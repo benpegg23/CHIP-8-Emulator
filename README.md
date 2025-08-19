@@ -4,7 +4,9 @@
 
 This project is a fully functional emulator for the CHIP-8 system written in C++ to run `.ch8` roms. 
 
-![CHIP-8 Gameplay](imgs/CHIP-8_Gameplay.gif)
+<div align="center">
+    <img src="imgs/CHIP-8_Gameplay.gif" alt="CHIP-8 Gameplay" width="100%">
+</div>
 
 ## Background
 
@@ -28,69 +30,34 @@ CHIP-8 is an interpreted programming language from the 70s that was used on 8-bi
 
 ## Building and Running
 
-This project uses a `Makefile` and requires a system-wide installation of SDL2.
-
 ### Prerequisites
 
-Before building, you must install the SDL2 development library. The recommended way on Windows is to use MSYS2.
+Before building, you must install the SDL2 development library. Using MSYS2 on windows:
 
-1.  **Open the `MSYS2 MINGW64` terminal.**
-2.  **Install SDL2** using the `pacman` package manager:
+1.  Open the `MSYS2 MINGW64` terminal.
+
+2.  Install SDL2 using `pacman`:
     ```bash
     pacman -S mingw-w64-x86_64-SDL2
     ```
 
-For other operating systems:
--   **macOS (with Homebrew)**: `brew install sdl2`
--   **Debian/Ubuntu**: `sudo apt-get install libsdl2-dev`
+This setup ensures that the `sdl2-config` is in your `PATH`.
 
-This setup ensures that the `sdl2-config` tool is available in your shell's `PATH`.
+### Building
 
-### Build, Run, and Clean
+Navigate to the root directory in your terminal and run this command:
+```
+mingw32-make
+```
+This will generate an executable called `chip8_emulator.exe`.
 
-Navigate to the project's root directory in your terminal (e.g., `MSYS2 MINGW64` on Windows) and use the following commands:
+### Running
+To run games, run the executable with the file path of the `.ch8` ROM you want to run as an argument. 
 
--   **Build the executable**:
-    ```sh
-    make
-    ```
-    *(On Windows, this command is equivalent to `mingw32-make` inside the correct MSYS2 terminal).*
+While in the root directory, run this command:
+```
+./chip8_emulator ./roms/[name of the rom you want to run].ch8
+```
 
--   **Run the emulator**:
-    ```sh
-    make run
-    ```
 
--   **Clean build files**:
-    ```sh
-    make clean
-    ```
 
-### Optional: Compiling Directly in PowerShell
-
-If you prefer to use PowerShell instead of the MSYS2 terminal, you can do so by performing a one-time setup to add the MinGW tools to your system's `PATH`.
-
-**1. Find your MinGW `bin` directory**
-
-This directory is located inside your MSYS2 installation folder. The default location is:
-`C:\msys64\mingw64\bin`
-
-**2. Add the directory to your Windows PATH**
-
-a. In the Windows search bar, type "environment" and select **Edit the system environment variables**.
-b. In the System Properties window, click the **Environment Variables...** button.
-c. In the top "User variables" section, select the `Path` variable and click **Edit...**.
-d. Click **New** and paste the path to your MinGW `bin` directory (e.g., `C:\msys64\mingw64\bin`).
-e. Click OK on all the windows to save the changes.
-
-**3. Restart PowerShell**
-
-You must open a **new** PowerShell terminal for the changes to take effect.
-
-**4. Build and Run**
-
-Now you can use the `mingw32-make` command directly in PowerShell:
-
--   **Build**: `mingw32-make`
--   **Run**: `mingw32-make run`
--   **Clean**: `mingw32-make clean`
