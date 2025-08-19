@@ -261,7 +261,6 @@ void Chip8::instruction_cycle(){
       exit(1);
       
   }
-
 }
 
 void Chip8::load_rom(const char *file){
@@ -300,9 +299,12 @@ void Chip8::update_timers(){
   }
 }
 
-
 bool Chip8::get_halted(){
   return halted;
+}
+
+uint8_t Chip8::get_sound_timer(){
+  return sound_timer;
 }
 
 /*

@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 
+// helper function to draw to the screen
 void draw(Chip8 *chip8_obj, SDL_Renderer *renderer_ptr){
   SDL_SetRenderDrawColor(renderer_ptr, 255, 255, 255, 255);
   const bool* pixel = chip8_obj->get_display();
@@ -16,6 +17,23 @@ void draw(Chip8 *chip8_obj, SDL_Renderer *renderer_ptr){
         SDL_RenderFillRect(renderer_ptr, &rect);
       }
     }
+  }
+}
+
+// loads audio buffer with a beep sound depending on sound_timer
+void beep (void *chip8_beep, Uint8 *audio_buffer, int length){
+  Chip8 *chip8_sound = (Chip8*) chip8_beep;
+  int16_t *audio_buffer_16 = (int16_t*) audio_buffer; // cast the audio buffer to be a 16 bit signed int because we're using AUDIO_S16SYS audio spec
+  if (chip8_sound->get_sound_timer() > 0){ // fill audio buffer with square wave to make a beep sound
+    for (int i = 0; i < length/2; i++){ // each sample 2 bytes, so fill buffer with length/2 many samples
+      if (i < length/4){ // first half of buffer
+        audio_buffer_16[i] = -3000;
+      } else { // second half of buffer
+        audio_buffer_16[i] = 3000;
+      }
+    }
+  } else { // fill audio buffer with silence (0)
+    SDL_memset(audio_buffer, 0, length);
   }
 }
 
@@ -35,7 +53,7 @@ int main(int argc, char* argv[]){
   SDL_Event event;
 
   // initalize SDL, error checking
-  if (SDL_Init(SDL_INIT_VIDEO) != 0){ 
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0){ 
     std::cout << "SDL error: " << SDL_GetError() << "\n";
     return 1;
   }
@@ -56,6 +74,22 @@ int main(int argc, char* argv[]){
   if (!renderer){
     std::cout << "SDL error while creating renderer: " << SDL_GetError() << "\n";
     return 1;
+  }
+
+  // define SDL audiospec structure
+  SDL_AudioSpec audio_spec; 
+  SDL_memset(&audio_spec, 0, sizeof(audio_spec)); // initialize
+  audio_spec.freq = 44100; // cd quality
+  audio_spec.format = AUDIO_S16SYS;
+  audio_spec.channels = 1; // mono
+  audio_spec.samples = 1024;
+  audio_spec.callback = beep;
+  audio_spec.userdata = &chip8;
+  SDL_AudioDeviceID device_ID = SDL_OpenAudioDevice(NULL, 0, &audio_spec, NULL, 0);
+
+  // error checking for audio
+  if (device_ID == 0){
+    std::cout << "SDL audio error: " << SDL_GetError() << "\n";
   }
 
   // event loop
@@ -182,6 +216,13 @@ int main(int argc, char* argv[]){
 
     // decrement timer
     chip8.update_timers();
+
+    // play/pause sound
+    if (chip8.get_sound_timer() > 0){
+      SDL_PauseAudioDevice(device_ID, 0); // play sound
+    } else {
+      SDL_PauseAudioDevice(device_ID, 1); // pause sound
+    }
     
     // execute 12 instruction cycles per frame to reach cpu clock speed of 720 Hz
     if (!chip8.get_halted()){
@@ -205,15 +246,8 @@ int main(int argc, char* argv[]){
     // add delay of 16 ms to refresh at 60 Hz
     SDL_Delay(16);
 
-  }
-  
-  /*
-  chip8.debug();
-  for (int i = 0; i < 20; i++){
-    chip8.instruction_cycle();
-  }
-  chip8.debug();
-  */
+  } 
+
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();

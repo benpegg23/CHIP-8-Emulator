@@ -13,6 +13,7 @@ class Chip8 {
     void set_keypad(uint8_t key_index, bool pressed);
     void update_timers();
     bool get_halted();
+    uint8_t get_sound_timer();
     // uint16_t get_PC(); ***testing***
   private:
     uint8_t memory[4096]; // virtual memory
