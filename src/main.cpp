@@ -92,7 +92,7 @@ int main(int argc, char* argv[]){
     std::cout << "SDL audio error: " << SDL_GetError() << "\n";
   }
 
-  // event loop
+  // main loop
   bool running = true;
   while(running){
     while (SDL_PollEvent(&event)){
